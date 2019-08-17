@@ -163,10 +163,15 @@ bool reconnectMQTT(void)
 bool gatewayTransportConnect(void)
 {
 #if defined(MY_GATEWAY_ESP8266) || defined(MY_GATEWAY_ESP32)
-	if (WiFi.status() != WL_CONNECTED) {
-		GATEWAY_DEBUG(PSTR("GWT:TPC:CONNECTING...\n"));
+	int i=0;
+	while (WiFi.status() != WL_CONNECTED) {
+		GATEWAY_DEBUG(PSTR("GWT:TPC:WIFI_CONNECTING.\n"));
+		if (i > 30){
+			GATEWAY_DEBUG(PSTR("GWT:TPC:WIFI_CONNENTION_FAILED.\n"));
+			return false;
+		}
+		i++;
 		delay(1000);
-		return false;
 	}
 	GATEWAY_DEBUG(PSTR("GWT:TPC:IP=%s\n"), WiFi.localIP().toString().c_str());
 #elif defined(MY_GATEWAY_LINUX)
